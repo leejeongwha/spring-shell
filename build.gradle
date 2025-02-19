@@ -25,7 +25,10 @@ ext {
 dependencies {
     implementation 'org.springframework.shell:spring-shell-starter'
     implementation 'org.springframework.boot:spring-boot-starter'
-    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation('org.springframework.boot:spring-boot-starter-web') {
+        //톰캣 제거
+        exclude module: 'spring-boot-starter-tomcat'
+    }
 //    implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.apache.httpcomponents.client5:httpclient5'
     implementation 'org.apache.commons:commons-lang3:3.12.0'

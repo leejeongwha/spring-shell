@@ -4,6 +4,13 @@ spring:
   shell:
     interactive:
       enabled: true
+  main:
+    web-application-type: none
+    banner-mode: off
+
+logging:
+  level:
+    root: off
 
 skm:
   base-url: https://api-keymanager.alpha-nhncloudservice.com
