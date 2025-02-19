@@ -1,0 +1,13 @@
+[
+  {
+    "name": "org.jboss.logging.Logger",
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "org.hibernate.validator.internal.util.logging.Log",
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true
+  }
+]
+

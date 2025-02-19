@@ -1,0 +1,65 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.4.2'
+    id 'io.spring.dependency-management' version '1.1.7'
+    id 'org.graalvm.buildtools.native' version '0.9.28'
+}
+
+group = 'com.example'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+ext {
+    set('springShellVersion', "3.4.0")
+}
+
+dependencies {
+    implementation 'org.springframework.shell:spring-shell-starter'
+    implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+//    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.apache.httpcomponents.client5:httpclient5'
+    implementation 'org.apache.commons:commons-lang3:3.12.0'
+    compileOnly 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.shell:spring-shell-starter-test'
+    testCompileOnly 'org.projectlombok:lombok'
+    testAnnotationProcessor 'org.projectlombok:lombok'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.shell:spring-shell-dependencies:${springShellVersion}"
+    }
+}
+
+// Hibernate Validator가 사용하는 JBoss Logging이 GraalVM의 Native Image에서 누락되었기 때문에 아래 코드 추가 필요
+// Logback이 GraalVM과 완벽히 호환되지 않아서 발생
+graalvmNative {
+    binaries {
+        named("main") {
+            imageName = 'nhncloud-cli'
+            buildArgs.add("--initialize-at-run-time=org.jboss.logging,org.hibernate.validator.internal.util.logging")
+            buildArgs.add("--initialize-at-build-time=ch.qos.logback,ch.qos.logback.core.util.StatusPrinter2," +
+                    "ch.qos.logback.core.status.InfoStatus,ch.qos.logback.classic.Level,ch.qos.logback.core.util.Loader," +
+                    "org.apache.logging.log4j.util.PropertySource,org.apache.logging.log4j," +
+                    "org.apache.logging.log4j.status.StatusLogger,org.apache.logging.log4j.spi.AbstractLogger," +
+                    "org.apache.logging.log4j.util.StackLocatorUtil,org.slf4j.helpers.Reporter,org.slf4j.LoggerFactory," +
+                    "org.apache.logging.slf4j")
+        }
+    }
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}

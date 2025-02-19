@@ -1,0 +1,9 @@
+1739244086978:getSecret --appKey WxsMNQ3IBBY5cwNh --keyId 0cbf7e81ee9642ec85f8b2b05691115b --password test password --keyStorePath /Users/nhn/Downloads/인증서 #3.p12
+1739244133292:getSecret --appKey WxsMNQ3IBBY5cwNh --keyId 0cbf7e81ee9642ec85f8b2b05691115b --password test password --keyStorePath /Users/nhn/Downloads/skmalpha인증서.p12
+1739244158362:getSecret --appKey WxsMNQ3IBBY5cwNh --keyId 0cbf7e81ee9642ec85f8b2b05691115b --password 'test password' --keyStorePath /Users/nhn/Downloads/skmalpha인증서.p12
+1739244322409:quit
+1739350757211:hello
+1739350759215:help
+1739350762746:help getSecret
+1739350773300:quti
+1739350776123:quit

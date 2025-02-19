@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: skm
+  shell:
+    interactive:
+      enabled: true
+
+skm:
+  base-url: https://api-keymanager.alpha-nhncloudservice.com
