@@ -1,12 +1,18 @@
 spring:
   application:
-    name: skm
+    version: 1.0.0
   shell:
     interactive:
       enabled: true
+    command:
+      version:
+        enabled: false
   main:
     web-application-type: none
-    banner-mode: off
+    #banner-mode: off
+
+application:
+  title: NHN CLOUD CLI TOOL
 
 logging:
   level:

@@ -6,7 +6,7 @@ plugins {
 }
 
 group = 'com.example'
-version = '0.0.1-SNAPSHOT'
+version = '1.0.0'
 
 java {
     toolchain {
@@ -51,7 +51,7 @@ dependencyManagement {
 graalvmNative {
     binaries {
         named("main") {
-            imageName = 'nhncloud-cli'
+            imageName = 'nhncloud-cli-macos'
             buildArgs.add("--initialize-at-run-time=org.jboss.logging,org.hibernate.validator.internal.util.logging")
             buildArgs.add("--initialize-at-build-time=ch.qos.logback,ch.qos.logback.core.util.StatusPrinter2," +
                     "ch.qos.logback.core.status.InfoStatus,ch.qos.logback.classic.Level,ch.qos.logback.core.util.Loader," +
