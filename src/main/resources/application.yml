@@ -19,4 +19,7 @@ logging:
     root: off
 
 skm:
-  base-url: https://api-keymanager.alpha-nhncloudservice.com
+  domains:
+    alpha: https://api-keymanager.alpha-nhncloudservice.com
+    beta: https://api-keymanager.beta-nhncloudservice.com
+    real: https://api-keymanager.nhncloudservice.com

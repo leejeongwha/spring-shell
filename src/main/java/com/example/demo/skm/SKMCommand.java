@@ -7,7 +7,7 @@ import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
 import org.apache.hc.client5.http.ssl.SSLConnectionSocketFactoryBuilder;
 import org.apache.hc.core5.ssl.SSLContextBuilder;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.ClientHttpRequestFactory;
@@ -23,22 +23,24 @@ import java.security.KeyStore;
 
 @ShellComponent
 public class SKMCommand {
-    @Value("${skm.base-url}")
-    private String skmBaseUrl;
+    @Autowired
+    private SkmConfig skmConfig;
 
-    @ShellMethod(key = "getSecret", value = "Get the secret with appKey and keyId")
-    public String getSecret(@ShellOption(help = "Application Key") String appKey,
-                            @ShellOption(help = "Key ID") String keyId,
-                            @ShellOption(help = "Mac Address", defaultValue = "") String mac,
-                            @ShellOption(help = "keyStorePassword", defaultValue = "") String password,
-                            @ShellOption(help = "keyStorePath", defaultValue = "") String keyStorePath) throws Exception {
+    @ShellMethod(key = "getSecret", value = "기밀 데이터 조회")
+    public String getSecret(@ShellOption(value = {"--env", "-e"}, help = "환경 (alpha, beta, real)", defaultValue = "real") String env,
+                            @ShellOption(value = {"--appKey", "-a"}, help = "AppKey") String appKey,
+                            @ShellOption(value = {"--keyId", "-k"}, help = "Key ID") String keyId,
+                            @ShellOption(value = {"--mac", "-m"}, help = "Mac Address", defaultValue = "") String mac,
+                            @ShellOption(value = {"--pwd", "-p"}, help = "인증서 Password", defaultValue = "") String password,
+                            @ShellOption(value = {"--path", "-h"}, help = "인증서 경로", defaultValue = "") String path) throws Exception {
         RestClient.Builder restClientBuilder = RestClient.builder()
-            .baseUrl(skmBaseUrl);
-        if (StringUtils.isNotEmpty(keyStorePath) && StringUtils.isNotEmpty(password)) {
-            restClientBuilder.requestFactory(createSslVerifyRequestFactory(keyStorePath, password));
-        }
-        RestClient restClient = restClientBuilder.build();
+            .baseUrl(skmConfig.getDomains().get(env));
 
+        if (StringUtils.isNotEmpty(path) && StringUtils.isNotEmpty(password)) {
+            restClientBuilder.requestFactory(createSslVerifyRequestFactory(path, password));
+        }
+
+        RestClient restClient = restClientBuilder.build();
         return restClient.get()
             .uri("/keymanager/v1.0/appkey/" + appKey + "/secrets/" + keyId)
             .headers(headers -> {
