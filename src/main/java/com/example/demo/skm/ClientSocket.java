@@ -14,6 +14,7 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
 import java.net.SocketTimeoutException;
+import java.nio.ByteBuffer;
 
 @AllArgsConstructor
 @Slf4j
@@ -44,26 +45,27 @@ public class ClientSocket {
                  ByteArrayOutputStream buffer = new ByteArrayOutputStream()) {
                 dataOutputStream.write(Hex.decodeHex(message));
 
-                byte[] temp = new byte[1024];
-                int bytesRead;
-                try {
-                    // 데이터 읽기: 타임아웃 되더라도 누적된 데이터 반환
-                    while ((bytesRead = dataInputStream.read(temp)) != -1) {
-                        buffer.write(temp, 0, bytesRead);
-                    }
-                } catch (SocketTimeoutException e) {
-                    // System.out.println("읽은 만큼 반환합니다.");
-                }
+                byte[] header = new byte[8]; // 예시, 실제 KMIP에서는 보통 최소 8~24바이트의 헤더
+                dataInputStream.readFully(header);
+                // Length 필드 파싱 (예: 4~7번째 바이트에 길이 정보 있음)
+                int length = ByteBuffer.wrap(header, 4, 4).getInt(); // 또는 ByteBuffer.order(ByteOrder.BIG_ENDIAN)
+                System.out.println("Body Length: " + length);
 
-                byte[] bytes = buffer.toByteArray();
-                result = Hex.encodeHexString(bytes, false);
+                // 전체 메시지를 읽기
+                byte[] body = new byte[length];
+                dataInputStream.readFully(body);
+                result = Hex.encodeHexString(header, false) + Hex.encodeHexString(body, false);
+
+                throw new SocketTimeoutException("강제로 타임아웃 Exception 발생");
             }
         } catch (SocketTimeoutException e) {
             if (StringUtils.isEmpty(result)) {
                 result = "Timeout Error: " + e.getMessage();
             }
         } catch (Exception e) {
-            result = "Error: " + e.getMessage();
+            if (StringUtils.isEmpty(result)) {
+                result = "Error: " + e.getMessage();
+            }
         }
 
         return result;
