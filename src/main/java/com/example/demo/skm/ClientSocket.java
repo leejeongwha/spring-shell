@@ -3,9 +3,11 @@ package com.example.demo.skm;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
+import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.net.InetSocketAddress;
@@ -18,13 +20,12 @@ import java.net.SocketTimeoutException;
 public class ClientSocket {
     public static final String DISCOVER_VERSIONS_MESSAGE = "42007801000000604200770100000038420069010000002042006A0200000004000000010000000042006B0200000004000000010000000042000D0200000004000000010000000042000F010000001842005C05000000040000001E000000004200790100000000";
 
-    public String send(String message, String host, int port) {
+    public String send(String message, String host, int port) throws Exception {
         String result = "";
 
+        // 1. 일반 소켓 생성
+        Socket underlyingSocket = new Socket();
         try {
-            // 1. 일반 소켓 생성
-            Socket underlyingSocket = new Socket();
-
             // 2. Connect timeout 설정 (예: 3초)
             int connectTimeout = 3000;
             SocketAddress endpoint = new InetSocketAddress(host, port);
@@ -38,13 +39,29 @@ public class ClientSocket {
             sslSocket.setSoTimeout(5000);
 
             // 5. 입출력 스트림 설정 및 통신
-            try (DataInputStream dataInputStream = new DataInputStream(sslSocket.getInputStream()); DataOutputStream dataOutputStream = new DataOutputStream(sslSocket.getOutputStream());) {
+            try (DataInputStream dataInputStream = new DataInputStream(sslSocket.getInputStream());
+                 DataOutputStream dataOutputStream = new DataOutputStream(sslSocket.getOutputStream());
+                 ByteArrayOutputStream buffer = new ByteArrayOutputStream()) {
                 dataOutputStream.write(Hex.decodeHex(message));
-                byte[] bytes = dataInputStream.readAllBytes();
+
+                byte[] temp = new byte[1024];
+                int bytesRead;
+                try {
+                    // 데이터 읽기: 타임아웃 되더라도 누적된 데이터 반환
+                    while ((bytesRead = dataInputStream.read(temp)) != -1) {
+                        buffer.write(temp, 0, bytesRead);
+                    }
+                } catch (SocketTimeoutException e) {
+                    // System.out.println("읽은 만큼 반환합니다.");
+                }
+
+                byte[] bytes = buffer.toByteArray();
                 result = Hex.encodeHexString(bytes, false);
             }
         } catch (SocketTimeoutException e) {
-            result = "Timeout Error: " + e.getMessage();
+            if (StringUtils.isEmpty(result)) {
+                result = "Timeout Error: " + e.getMessage();
+            }
         } catch (Exception e) {
             result = "Error: " + e.getMessage();
         }
