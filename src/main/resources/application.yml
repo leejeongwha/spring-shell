@@ -23,3 +23,10 @@ skm:
     alpha: https://api-keymanager.alpha-nhncloudservice.com
     beta: https://api-keymanager.beta-nhncloudservice.com
     real: https://api-keymanager.nhncloudservice.com
+    ngsc: https://api-keymanager.ngsc.go.kr
+    ninc: https://api-keymanager.ninc.go.kr
+    ncgn: https://ppp-api-keymanager.cloud.toastoven.net
+    ngsc-beta: https://api-keymanager.beta-gncloud.go.kr
+    gov-alpha: https://api-keymanager.alpha-gov-nhncloudservice.com
+    gov-beta: https://api-keymanager.beta-gov-nhncloudservice.com
+    gov: https://api-keymanager.gov-nhncloudservice.com
