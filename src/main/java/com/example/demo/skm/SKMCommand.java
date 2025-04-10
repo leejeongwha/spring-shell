@@ -73,11 +73,13 @@ public class SKMCommand {
     }
 
     @ShellMethod(key = "getKmipVersion", value = "KMIP 버전 확인 메세지")
-    public String getSecret(@ShellOption(value = {"--host", "-o"}, help = "호스트", defaultValue = "127.0.0.1") String host,
-                            @ShellOption(value = {"--port", "-p"}, help = "포트", defaultValue = "5696") Integer port) throws Exception {
-        System.setProperty("javax.net.ssl.keyStore", getPathFromTempFile("cert/client-keystore.jks"));
+    public String getSecret(@ShellOption(value = {"--host", "-i"}, help = "호스트", defaultValue = "127.0.0.1") String host,
+                            @ShellOption(value = {"--port", "-p"}, help = "포트", defaultValue = "5696") Integer port,
+                            @ShellOption(value = {"--key-path", "-k"}, help = "포트") String keystorePath,
+                            @ShellOption(value = {"--trust-path", "-t"}, help = "포트") String truststorePath) throws Exception {
+        System.setProperty("javax.net.ssl.keyStore", keystorePath);
         System.setProperty("javax.net.ssl.keyStorePassword", "nhn!@#123");
-        System.setProperty("javax.net.ssl.trustStore", getPathFromTempFile("cert/client-truststore.jks"));
+        System.setProperty("javax.net.ssl.trustStore", truststorePath);
         System.setProperty("javax.net.ssl.trustStorePassword", "nhn!@#123");
 
         String message = ClientSocket.DISCOVER_VERSIONS_MESSAGE;
